@@ -31,7 +31,7 @@ public class RpcClientProxy implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        //客户端向服务端传输的对象,
+        //客户端向服务端传输的对象,Builder模式生成,利用反射获取相关信息
         RpcRequest rpcRequest = RpcRequest.builder()
                 .interfaceName(method.getDeclaringClass().getName())
                 .methodName(method.getName())
