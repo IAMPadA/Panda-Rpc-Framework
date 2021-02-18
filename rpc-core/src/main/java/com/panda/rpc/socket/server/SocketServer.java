@@ -1,6 +1,8 @@
-package com.panda.rpc.server;
+package com.panda.rpc.socket.server;
 
+import com.panda.rpc.RpcServer;
 import com.panda.rpc.registry.ServiceRegistry;
+import com.panda.rpc.RequestHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,11 +14,11 @@ import java.util.concurrent.*;
 /**
  * @author [PANDA] 1843047930@qq.com
  * @date [2021-02-05 11:34]
- * @description 进行远程调用连接的服务端
+ * @description Socket方式进行远程调用连接的服务端
  */
-public class RpcServer {
+public class SocketServer implements RpcServer {
 
-    private static final Logger logger = LoggerFactory.getLogger(RpcServer.class);
+    private static final Logger logger = LoggerFactory.getLogger(SocketServer.class);
 
     private static final int CORE_POOL_SIZE = 5;
     private static final int MAXIMUM_POOL_SIZE = 50;
@@ -26,7 +28,7 @@ public class RpcServer {
     private RequestHandler requestHandler = new RequestHandler();
     private final ServiceRegistry serviceRegistry;
 
-    public RpcServer(ServiceRegistry serviceRegistry){
+    public SocketServer(ServiceRegistry serviceRegistry){
         this.serviceRegistry = serviceRegistry;
         /**
          * 设置上限为100个线程的阻塞队列
@@ -45,6 +47,7 @@ public class RpcServer {
      * @return [void]
      * @date [2021-02-05 11:57]
      */
+    @Override
     public void start(int port){
         try(ServerSocket serverSocket = new ServerSocket(port)){
             logger.info("服务器启动……");

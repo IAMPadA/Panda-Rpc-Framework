@@ -2,6 +2,7 @@ package com.panda.rpc.entity;
 
 import com.panda.rpc.enumeration.ResponseCode;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -11,7 +12,10 @@ import java.io.Serializable;
  * @description 服务端处理完后，向客户端返回的对象
  */
 @Data
+@NoArgsConstructor
 public class RpcResponse<T> implements Serializable {
+
+
     /**
      *响应状态码
      */

@@ -1,19 +1,21 @@
 package com.panda.test;
 
+import com.panda.rpc.RpcClientProxy;
 import com.panda.rpc.api.HelloObject;
 import com.panda.rpc.api.HelloService;
-import com.panda.rpc.client.RpcClientProxy;
+import com.panda.rpc.socket.client.SocketClient;
 
 /**
  * @author [PANDA] 1843047930@qq.com
  * @date [2021-02-05 14:50]
  * @description 测试用客户端
  */
-public class TestClient {
+public class SocketTestClient {
 
     public static void main(String[] args) {
+        SocketClient client = new SocketClient("127.0.0.1", 9000);
         //接口与代理对象之间的中介对象
-        RpcClientProxy proxy = new RpcClientProxy("127.0.0.1", 9000);
+        RpcClientProxy proxy = new RpcClientProxy(client);
         //创建代理对象
         HelloService helloService = proxy.getProxy(HelloService.class);
         //接口方法的参数对象

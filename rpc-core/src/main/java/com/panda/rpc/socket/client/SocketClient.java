@@ -1,5 +1,6 @@
-package com.panda.rpc.client;
+package com.panda.rpc.socket.client;
 
+import com.panda.rpc.RpcClient;
 import com.panda.rpc.entity.RpcRequest;
 import com.panda.rpc.entity.RpcResponse;
 import com.panda.rpc.enumeration.ResponseCode;
@@ -16,13 +17,22 @@ import java.net.Socket;
 /**
  * @author [PANDA] 1843047930@qq.com
  * @date [2021-02-04 17:20]
- * @description 进行远程调用的客户端
+ * @description Socket方式进行远程调用的客户端
  */
-public class RpcClient {
+public class SocketClient implements RpcClient {
 
-    private static final Logger logger = LoggerFactory.getLogger(RpcClient.class);
+    private static final Logger logger = LoggerFactory.getLogger(SocketClient.class);
 
-    public Object sendRequest(RpcRequest rpcRequest, String host, int port) {
+    private final String host;
+    private final int port;
+
+    public SocketClient(String host, int port){
+        this.host = host;
+        this.port = port;
+    }
+
+    @Override
+    public Object sendRequest(RpcRequest rpcRequest){
         /**
          * socket套接字实现TCP网络传输
          * try()中一般放对资源的申请，若{}出现异常，()资源会自动关闭

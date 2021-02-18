@@ -2,6 +2,7 @@ package com.panda.rpc.api;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -13,6 +14,7 @@ import java.io.Serializable;
 
 //自动加上所有属性的get set toString hashCode equals方法
 @Data
+@NoArgsConstructor
 //添加一个含有所有已声明字段属性参数的构造函数
 @AllArgsConstructor
 

@@ -1,5 +1,6 @@
-package com.panda.rpc.server;
+package com.panda.rpc.socket.server;
 
+import com.panda.rpc.RequestHandler;
 import com.panda.rpc.entity.RpcRequest;
 import com.panda.rpc.entity.RpcResponse;
 import com.panda.rpc.registry.ServiceRegistry;
@@ -14,7 +15,7 @@ import java.net.Socket;
 /**
  * @author [PANDA] 1843047930@qq.com
  * @date [2021-02-18 11:38]
- * @description 处理客户端RpcRequest的工作线程
+ * @description IO传输模式|处理客户端RpcRequest的工作线程
  */
 public class RequestHandlerThread implements Runnable {
 
