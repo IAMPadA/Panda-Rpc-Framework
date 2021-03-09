@@ -17,7 +17,7 @@ import java.io.IOException;
 public class JsonSerializer implements CommonSerializer{
 
     private static final Logger logger = LoggerFactory.getLogger(JsonSerializer.class);
-
+    //ObjectMapper支持线程安全
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @Override
@@ -47,8 +47,7 @@ public class JsonSerializer implements CommonSerializer{
     }
 
     /**
-     * @description 由于使用JSON序列化和反序列化Object数组，无法保证反序列化后仍然为原实例类，需要重新判断处理
-     * 因为都是Object类型，分不清
+     * @description 使用JSON反序列化Object数组，无法保证反序列化后仍然为原实例类，通常直接被反序列化成String类型，因此要特殊处理
      * @param [obj]
      * @return [java.lang.Object]
      * @date [2021-02-22 15:03]
