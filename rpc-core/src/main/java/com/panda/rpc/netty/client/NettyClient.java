@@ -5,7 +5,6 @@ import com.panda.rpc.codec.CommonDecoder;
 import com.panda.rpc.codec.CommonEncoder;
 import com.panda.rpc.entity.RpcRequest;
 import com.panda.rpc.entity.RpcResponse;
-import com.panda.rpc.serializer.JsonSerializer;
 import com.panda.rpc.serializer.KryoSerializer;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.*;
@@ -24,15 +23,7 @@ import org.slf4j.LoggerFactory;
 public class NettyClient implements RpcClient {
 
     private static final Logger logger = LoggerFactory.getLogger(NettyClient.class);
-
-    private String host;
-    private int port;
     private static final Bootstrap bootstrap;
-
-    public NettyClient(String host, int port){
-        this.host = host;
-        this.port = port;
-    }
 
     static {
         EventLoopGroup group = new NioEventLoopGroup();
@@ -49,6 +40,14 @@ public class NettyClient implements RpcClient {
                                 .addLast(new NettyClientHandler());
                     }
                 });
+    }
+
+    private String host;
+    private int port;
+
+    public NettyClient(String host, int port){
+        this.host = host;
+        this.port = port;
     }
 
     @Override
