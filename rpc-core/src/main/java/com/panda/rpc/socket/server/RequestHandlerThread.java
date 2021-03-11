@@ -2,7 +2,6 @@ package com.panda.rpc.socket.server;
 
 import com.panda.rpc.RequestHandler;
 import com.panda.rpc.entity.RpcRequest;
-import com.panda.rpc.entity.RpcResponse;
 import com.panda.rpc.registry.ServiceRegistry;
 import com.panda.rpc.serializer.CommonSerializer;
 import com.panda.rpc.socket.util.ObjectReader;
@@ -10,7 +9,9 @@ import com.panda.rpc.socket.util.ObjectWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 
 /**
@@ -41,8 +42,7 @@ public class RequestHandlerThread implements Runnable {
             RpcRequest rpcRequest = (RpcRequest) ObjectReader.readObject(inputStream);
             String interfaceName = rpcRequest.getInterfaceName();
             Object service = serviceRegistry.getService(interfaceName);
-            Object result = requestHandler.handle(rpcRequest, service);
-            RpcResponse<Object> response = RpcResponse.success(result);
+            Object response = requestHandler.handle(rpcRequest, service);
             ObjectWriter.writeObject(outputStream, response, serializer);
         }catch (IOException e){
             logger.info("调用或发送时发生错误：" + e);

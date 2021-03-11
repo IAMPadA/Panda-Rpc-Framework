@@ -2,7 +2,6 @@ package com.panda.rpc.netty.server;
 
 import com.panda.rpc.RequestHandler;
 import com.panda.rpc.entity.RpcRequest;
-import com.panda.rpc.entity.RpcResponse;
 import com.panda.rpc.registry.DefaultServiceRegistry;
 import com.panda.rpc.registry.ServiceRegistry;
 import io.netty.channel.ChannelFuture;
@@ -35,8 +34,8 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> 
             logger.info("服务端接收到请求：{}", msg);
             String interfaceName = msg.getInterfaceName();
             Object service = serviceRegistry.getService(interfaceName);
-            Object result = requestHandler.handle(msg, service);
-            ChannelFuture future = ctx.writeAndFlush(RpcResponse.success(result));
+            Object response = requestHandler.handle(msg, service);
+            ChannelFuture future = ctx.writeAndFlush(response);
             //添加一个监听器到channelfuture来检测是否所有的数据包都发出，然后关闭通道
             future.addListener(ChannelFutureListener.CLOSE);
         }finally {
