@@ -1,8 +1,11 @@
 package com.panda.rpc.socket.server;
 
 import com.panda.rpc.RpcServer;
+import com.panda.rpc.enumeration.RpcError;
+import com.panda.rpc.exception.RpcException;
 import com.panda.rpc.registry.ServiceRegistry;
 import com.panda.rpc.RequestHandler;
+import com.panda.rpc.serializer.CommonSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,6 +29,7 @@ public class SocketServer implements RpcServer {
     private static final int BLOCKING_QUEUE_CAPACITY = 100;
     private final ExecutorService threadPool;
     private final ServiceRegistry serviceRegistry;
+    private CommonSerializer serializer;
     private RequestHandler requestHandler = new RequestHandler();
 
     public SocketServer(ServiceRegistry serviceRegistry){
@@ -49,17 +53,26 @@ public class SocketServer implements RpcServer {
      */
     @Override
     public void start(int port){
+        if (serializer == null){
+            logger.error("未设置序列化器");
+            throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
+        }
         try(ServerSocket serverSocket = new ServerSocket(port)){
             logger.info("服务器启动……");
             Socket socket;
             //当未接收到连接请求时，accept()会一直阻塞
             while ((socket = serverSocket.accept()) != null){
                 logger.info("客户端连接！{}:{}", socket.getInetAddress(), socket.getPort());
-                threadPool.execute(new RequestHandlerThread(socket, requestHandler, serviceRegistry));
+                threadPool.execute(new RequestHandlerThread(socket, requestHandler, serviceRegistry, serializer));
             }
             threadPool.shutdown();
         }catch (IOException e){
             logger.info("服务器启动时有错误发生：" + e);
         }
+    }
+
+    @Override
+    public void setSerializer(CommonSerializer serializer) {
+        this.serializer = serializer;
     }
 }

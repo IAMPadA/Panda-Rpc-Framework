@@ -1,6 +1,7 @@
 package com.panda.rpc;
 
 import com.panda.rpc.entity.RpcRequest;
+import com.panda.rpc.serializer.CommonSerializer;
 
 /**
  * @author [PANDA] 1843047930@qq.com
@@ -11,5 +12,6 @@ public interface RpcClient {
 
     Object sendRequest(RpcRequest rpcRequest);
 
+    void setSerializer(CommonSerializer serializer);
 }
 

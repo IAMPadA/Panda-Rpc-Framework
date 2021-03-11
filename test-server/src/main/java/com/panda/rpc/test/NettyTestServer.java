@@ -4,6 +4,7 @@ import com.panda.rpc.api.HelloService;
 import com.panda.rpc.netty.server.NettyServer;
 import com.panda.rpc.registry.DefaultServiceRegistry;
 import com.panda.rpc.registry.ServiceRegistry;
+import com.panda.rpc.serializer.KryoSerializer;
 
 /**
  * @author [PANDA] 1843047930@qq.com
@@ -16,6 +17,7 @@ public class NettyTestServer {
         ServiceRegistry registry = new DefaultServiceRegistry();
         registry.register(helloService);
         NettyServer server = new NettyServer();
+        server.setSerializer(new KryoSerializer());
         server.start(9999);
     }
 }

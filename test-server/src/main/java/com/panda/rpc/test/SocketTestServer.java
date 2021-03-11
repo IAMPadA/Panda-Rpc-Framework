@@ -3,6 +3,7 @@ package com.panda.rpc.test;
 import com.panda.rpc.api.HelloService;
 import com.panda.rpc.registry.DefaultServiceRegistry;
 import com.panda.rpc.registry.ServiceRegistry;
+import com.panda.rpc.serializer.HessianSerializer;
 import com.panda.rpc.socket.server.SocketServer;
 
 /**
@@ -17,6 +18,7 @@ public class SocketTestServer {
         ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
         serviceRegistry.register(helloService);
         SocketServer socketServer = new SocketServer(serviceRegistry);
+        socketServer.setSerializer(new HessianSerializer());
         socketServer.start(9000);
     }
 }

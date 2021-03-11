@@ -5,6 +5,7 @@ import com.panda.rpc.RpcClientProxy;
 import com.panda.rpc.api.HelloObject;
 import com.panda.rpc.api.HelloService;
 import com.panda.rpc.netty.client.NettyClient;
+import com.panda.rpc.serializer.HessianSerializer;
 
 /**
  * @author [PANDA] 1843047930@qq.com
@@ -14,6 +15,7 @@ import com.panda.rpc.netty.client.NettyClient;
 public class NettyTestClient {
     public static void main(String[] args) {
         RpcClient client = new NettyClient("127.0.0.1", 9999);
+        client.setSerializer(new HessianSerializer());
         RpcClientProxy rpcClientProxy = new RpcClientProxy(client);
         HelloService helloService = rpcClientProxy.getProxy(HelloService.class);
         HelloObject object = new HelloObject(12, "this is netty style");
