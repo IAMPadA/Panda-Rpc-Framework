@@ -1,6 +1,7 @@
 package com.panda.rpc.util;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import lombok.NoArgsConstructor;
 
 import java.util.concurrent.*;
 
@@ -9,6 +10,7 @@ import java.util.concurrent.*;
  * @date [2021-03-10 17:12]
  * @description 创建ThreadPool（线程池）工具类
  */
+@NoArgsConstructor
 public class ThreadPoolFactory {
     /**
      * 线程池参数
@@ -17,9 +19,6 @@ public class ThreadPoolFactory {
     private static final int MAXIMUM_POOL_SIZE = 100;
     private static final int KEEP_ALIVE_TIME = 1;
     private static final int BLOCKING_QUEUE_CAPACITY = 100;
-
-    private ThreadPoolFactory(){
-    }
 
     public static ExecutorService createDefaultThreadPool(String threadNamePrefix){
         return createDefaultThreadPool(threadNamePrefix, false);
@@ -31,6 +30,7 @@ public class ThreadPoolFactory {
          */
         BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(BLOCKING_QUEUE_CAPACITY);
         ThreadFactory threadFactory = createThreadFactory(threadNamePrefix, daemon);
+        //创建线程池
         return new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE_TIME, TimeUnit.MINUTES, workQueue, threadFactory);
     }
 
