@@ -1,10 +1,8 @@
 package com.panda.rpc.test;
 
 import com.panda.rpc.api.HelloService;
-import com.panda.rpc.registry.DefaultServiceRegistry;
-import com.panda.rpc.registry.ServiceRegistry;
 import com.panda.rpc.serializer.HessianSerializer;
-import com.panda.rpc.socket.server.SocketServer;
+import com.panda.rpc.transport.socket.server.SocketServer;
 
 /**
  * @author [PANDA] 1843047930@qq.com
@@ -12,13 +10,10 @@ import com.panda.rpc.socket.server.SocketServer;
  * @description 测试用服务端
  */
 public class SocketTestServer {
-
     public static void main(String[] args) {
         HelloService helloService = new HelloServiceImpl();
-        ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
-        serviceRegistry.register(helloService);
-        SocketServer socketServer = new SocketServer(serviceRegistry);
+        SocketServer socketServer = new SocketServer("127.0.0.1", 9998);
         socketServer.setSerializer(new HessianSerializer());
-        socketServer.start(9999);
+        socketServer.publishService(helloService, HelloService.class);
     }
 }

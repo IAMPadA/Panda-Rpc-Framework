@@ -1,4 +1,4 @@
-package com.panda.rpc;
+package com.panda.rpc.transport;
 
 import com.panda.rpc.entity.RpcRequest;
 import com.panda.rpc.serializer.CommonSerializer;

@@ -1,10 +1,8 @@
 package com.panda.rpc.test;
 
 import com.panda.rpc.api.HelloService;
-import com.panda.rpc.netty.server.NettyServer;
-import com.panda.rpc.registry.DefaultServiceRegistry;
-import com.panda.rpc.registry.ServiceRegistry;
 import com.panda.rpc.serializer.ProtostuffSerializer;
+import com.panda.rpc.transport.netty.server.NettyServer;
 
 /**
  * @author [PANDA] 1843047930@qq.com
@@ -14,10 +12,8 @@ import com.panda.rpc.serializer.ProtostuffSerializer;
 public class NettyTestServer {
     public static void main(String[] args) {
         HelloService helloService = new HelloServiceImpl();
-        ServiceRegistry registry = new DefaultServiceRegistry();
-        registry.register(helloService);
-        NettyServer server = new NettyServer();
+        NettyServer server = new NettyServer("127.0.0.1", 9999);
         server.setSerializer(new ProtostuffSerializer());
-        server.start(9999);
+        server.publishService(helloService, HelloService.class);
     }
 }

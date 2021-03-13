@@ -1,12 +1,15 @@
-package com.panda.rpc.netty.server;
+package com.panda.rpc.transport.netty.server;
 
-import com.panda.rpc.RpcServer;
+import com.panda.rpc.provider.ServiceProvider;
+import com.panda.rpc.provider.ServiceProviderImpl;
+import com.panda.rpc.register.NacosServiceRegistry;
+import com.panda.rpc.register.ServiceRegistry;
+import com.panda.rpc.transport.RpcServer;
 import com.panda.rpc.codec.CommonDecoder;
 import com.panda.rpc.codec.CommonEncoder;
 import com.panda.rpc.enumeration.RpcError;
 import com.panda.rpc.exception.RpcException;
 import com.panda.rpc.serializer.CommonSerializer;
-import com.panda.rpc.serializer.HessianSerializer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -17,6 +20,8 @@ import io.netty.handler.logging.LoggingHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetSocketAddress;
+
 /**
  * @author [PANDA] 1843047930@qq.com
  * @date [2021-02-21 14:04]
@@ -26,14 +31,40 @@ public class NettyServer implements RpcServer {
 
     private static final Logger logger = LoggerFactory.getLogger(NettyServer.class);
 
+    private final String host;
+    private final int port;
+
+    private final ServiceRegistry serviceRegistry;
+    private final ServiceProvider serviceProvider;
+
     private CommonSerializer serializer;
 
+    public NettyServer(String host, int port) {
+        this.host = host;
+        this.port = port;
+        serviceRegistry = new NacosServiceRegistry();
+        serviceProvider = new ServiceProviderImpl();
+    }
+
+    /**
+     * @description 将服务保存在本地的注册表，同时注册到Nacos
+     * @param [service, serviceClass]
+     * @return [void]
+     * @date [2021-03-13 16:02]
+     */
     @Override
-    public void start(int port) {
+    public <T> void publishService(Object service, Class<T> serviceClass) {
         if (serializer == null) {
             logger.error("未设置序列化器");
             throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
         }
+        serviceProvider.addServiceProvider(service);
+        serviceRegistry.register(serviceClass.getCanonicalName(), new InetSocketAddress(host, port));
+        start();
+    }
+
+    @Override
+    public void start() {
         //用于处理客户端新连接的主”线程池“
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         //用于连接后处理IO事件的从”线程池“
@@ -59,7 +90,7 @@ public class NettyServer implements RpcServer {
                         protected void initChannel(SocketChannel ch) throws Exception {
                             //初始化管道
                             ChannelPipeline pipeline = ch.pipeline();
-                            //往管道中添加Handler，注意入站Handler与出站Handler都必须按实际执行顺序添加，比如先解码再Server处理，那Decoder()就要放在前面。
+                            //往管道中添加Handler，注意入站Handler与出站Handler都必须按实际执行顺序添加，比如先解码再Server处理，那Decoder()就要放在前面
                             //但入站和出站Handler之间则互不影响，这里我就是先添加的出站Handler再添加的入站
                             pipeline.addLast(new CommonEncoder(serializer))
                                     .addLast(new CommonDecoder())
@@ -67,7 +98,7 @@ public class NettyServer implements RpcServer {
                         }
                     });
             //绑定端口，启动Netty，sync()代表阻塞主Server线程，以执行Netty线程，如果不阻塞Netty就直接被下面shutdown了
-            ChannelFuture future = serverBootstrap.bind(port).sync();
+            ChannelFuture future = serverBootstrap.bind(host, port).sync();
             //等确定通道关闭了，关闭future回到主Server线程
             future.channel().closeFuture().sync();
         }catch (InterruptedException e){
@@ -83,4 +114,5 @@ public class NettyServer implements RpcServer {
     public void setSerializer(CommonSerializer serializer) {
         this.serializer = serializer;
     }
+
 }

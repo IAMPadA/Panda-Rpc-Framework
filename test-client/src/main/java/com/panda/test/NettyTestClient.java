@@ -1,10 +1,10 @@
 package com.panda.test;
 
-import com.panda.rpc.RpcClient;
-import com.panda.rpc.RpcClientProxy;
+import com.panda.rpc.transport.RpcClient;
+import com.panda.rpc.transport.RpcClientProxy;
 import com.panda.rpc.api.HelloObject;
 import com.panda.rpc.api.HelloService;
-import com.panda.rpc.netty.client.NettyClient;
+import com.panda.rpc.transport.netty.client.NettyClient;
 import com.panda.rpc.serializer.ProtostuffSerializer;
 
 /**
@@ -14,7 +14,7 @@ import com.panda.rpc.serializer.ProtostuffSerializer;
  */
 public class NettyTestClient {
     public static void main(String[] args) {
-        RpcClient client = new NettyClient("127.0.0.1", 9999);
+        RpcClient client = new NettyClient();
         client.setSerializer(new ProtostuffSerializer());
         RpcClientProxy rpcClientProxy = new RpcClientProxy(client);
         HelloService helloService = rpcClientProxy.getProxy(HelloService.class);

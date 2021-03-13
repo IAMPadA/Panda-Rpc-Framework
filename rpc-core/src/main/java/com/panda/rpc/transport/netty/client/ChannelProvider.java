@@ -1,4 +1,4 @@
-package com.panda.rpc.netty.client;
+package com.panda.rpc.transport.netty.client;
 
 import com.panda.rpc.codec.CommonDecoder;
 import com.panda.rpc.codec.CommonEncoder;

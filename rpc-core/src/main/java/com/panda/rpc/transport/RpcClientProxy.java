@@ -1,4 +1,4 @@
-package com.panda.rpc;
+package com.panda.rpc.transport;
 
 import com.panda.rpc.entity.RpcRequest;
 import org.slf4j.Logger;
@@ -36,6 +36,5 @@ public class RpcClientProxy implements InvocationHandler {
         RpcRequest rpcRequest = new RpcRequest(UUID.randomUUID().toString(), method.getDeclaringClass().getName(),
                 method.getName(), args, method.getParameterTypes());
         return client.sendRequest(rpcRequest);
-
     }
 }

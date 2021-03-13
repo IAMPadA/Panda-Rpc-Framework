@@ -1,4 +1,4 @@
-package com.panda.rpc.socket.util;
+package com.panda.rpc.transport.socket.util;
 
 import com.panda.rpc.entity.RpcRequest;
 import com.panda.rpc.entity.RpcResponse;
