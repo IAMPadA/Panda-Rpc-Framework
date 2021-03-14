@@ -23,26 +23,25 @@ public class ServiceProviderImpl implements ServiceProvider {
     private static final Map<String, Object> serviceMap = new ConcurrentHashMap<>();
 
     /**
-     * 用来存放实现类的名称，Set存取更高效，存放实现类名称相比存放接口名称占的空间更小，因为一个实现类可能实现了多个接口，查找效率也会更高
+     * 用来存放服务名称(即接口名）
      */
     private static final Set<String> registeredService = ConcurrentHashMap.newKeySet();
 
+    /**
+     * @description 保存服务到本地服务注册表
+     * @param [service, serviceClass] 服务的实现类对象，服务类（接口）
+     * @return [void]
+     * @date [2021-03-14 9:51]
+     */
     @Override
-    public <T> void addServiceProvider(T service) {
-        String serviceImplName = service.getClass().getCanonicalName();
-        if(registeredService.contains(serviceImplName)){
+    public <T> void addServiceProvider(T service, Class<T> serviceClass) {
+        String serviceName = serviceClass.getCanonicalName();
+        if(registeredService.contains(serviceName)){
             return;
         }
-        registeredService.add(serviceImplName);
-        //可能实现了多个接口，故使用Class数组接收
-        Class<?>[] interfaces = service.getClass().getInterfaces();
-        if(interfaces.length == 0){
-            throw new RpcException(RpcError.SERVICE_NOT_IMPLEMENT_ANY_INTERFACE);
-        }
-        for(Class<?> i : interfaces){
-            serviceMap.put(i.getCanonicalName(), service);
-        }
-        logger.info("向接口：{} 注册服务：{}", interfaces, serviceImplName);
+        registeredService.add(serviceName);
+        serviceMap.put(serviceName, service);
+        logger.info("向接口：{} 注册服务：{}", service.getClass().getInterfaces(), serviceName);
     }
 
     @Override

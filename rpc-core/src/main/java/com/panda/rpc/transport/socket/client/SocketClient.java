@@ -1,6 +1,8 @@
 package com.panda.rpc.transport.socket.client;
 
+import com.panda.rpc.register.NacosServiceDiscovery;
 import com.panda.rpc.register.NacosServiceRegistry;
+import com.panda.rpc.register.ServiceDiscovery;
 import com.panda.rpc.register.ServiceRegistry;
 import com.panda.rpc.transport.RpcClient;
 import com.panda.rpc.entity.RpcRequest;
@@ -27,12 +29,12 @@ public class SocketClient implements RpcClient {
 
     private static final Logger logger = LoggerFactory.getLogger(SocketClient.class);
 
-    private final ServiceRegistry serviceRegistry;
+    private final ServiceDiscovery serviceDiscovery;
 
     private CommonSerializer serializer;
 
     public SocketClient() {
-        serviceRegistry = new NacosServiceRegistry();
+        serviceDiscovery = new NacosServiceDiscovery();
     }
 
     @Override
@@ -42,7 +44,7 @@ public class SocketClient implements RpcClient {
             throw new RpcException(RpcError.SERIALIZER_NOT_FOUND);
         }
         //从Nacos获取提供对应服务的服务端地址
-        InetSocketAddress inetSocketAddress = serviceRegistry.lookupService(rpcRequest.getInterfaceName());
+        InetSocketAddress inetSocketAddress = serviceDiscovery.lookupService(rpcRequest.getInterfaceName());
         /**
          * socket套接字实现TCP网络传输
          * try()中一般放对资源的申请，若{}出现异常，()资源会自动关闭
