@@ -1,9 +1,9 @@
 package com.panda.test;
 
-import com.panda.rpc.transport.RpcClientProxy;
 import com.panda.rpc.api.HelloObject;
 import com.panda.rpc.api.HelloService;
-import com.panda.rpc.serializer.KryoSerializer;
+import com.panda.rpc.serializer.CommonSerializer;
+import com.panda.rpc.transport.RpcClientProxy;
 import com.panda.rpc.transport.socket.client.SocketClient;
 
 /**
@@ -14,8 +14,7 @@ import com.panda.rpc.transport.socket.client.SocketClient;
 public class SocketTestClient {
 
     public static void main(String[] args) {
-        SocketClient client = new SocketClient();
-        client.setSerializer(new KryoSerializer());
+        SocketClient client = new SocketClient(CommonSerializer.KRYO_SERIALIZER);
         //接口与代理对象之间的中介对象
         RpcClientProxy proxy = new RpcClientProxy(client);
         //创建代理对象
