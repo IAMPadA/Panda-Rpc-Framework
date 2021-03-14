@@ -1,5 +1,6 @@
 package com.panda.rpc.transport.netty.server;
 
+import com.panda.rpc.hook.ShutdownHook;
 import com.panda.rpc.provider.ServiceProvider;
 import com.panda.rpc.provider.ServiceProviderImpl;
 import com.panda.rpc.register.NacosServiceRegistry;
@@ -99,6 +100,8 @@ public class NettyServer implements RpcServer {
                     });
             //绑定端口，启动Netty，sync()代表阻塞主Server线程，以执行Netty线程，如果不阻塞Netty就直接被下面shutdown了
             ChannelFuture future = serverBootstrap.bind(host, port).sync();
+            //添加注销服务的钩子，服务端关闭时才会执行
+            ShutdownHook.getShutdownHook().addClearAllHook();
             //等确定通道关闭了，关闭future回到主Server线程
             future.channel().closeFuture().sync();
         }catch (InterruptedException e){

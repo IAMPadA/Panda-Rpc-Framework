@@ -18,15 +18,15 @@ import java.net.Socket;
  * @date [2021-02-18 11:38]
  * @description IO传输模式|处理客户端RpcRequest的工作线程
  */
-public class RequestHandlerThread implements Runnable {
+public class SocketRequestHandlerThread implements Runnable {
 
-    private static final Logger logger = LoggerFactory.getLogger(RequestHandlerThread.class);
+    private static final Logger logger = LoggerFactory.getLogger(SocketRequestHandlerThread.class);
 
     private Socket socket;
     private RequestHandler requestHandler;
     private CommonSerializer serializer;
 
-    public RequestHandlerThread(Socket socket, RequestHandler requestHandler, CommonSerializer serializer) {
+    public SocketRequestHandlerThread(Socket socket, RequestHandler requestHandler, CommonSerializer serializer) {
         this.socket = socket;
         this.requestHandler = requestHandler;
         this.serializer = serializer;

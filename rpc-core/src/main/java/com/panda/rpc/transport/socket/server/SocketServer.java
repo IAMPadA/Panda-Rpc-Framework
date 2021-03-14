@@ -1,5 +1,6 @@
 package com.panda.rpc.transport.socket.server;
 
+import com.panda.rpc.hook.ShutdownHook;
 import com.panda.rpc.provider.ServiceProvider;
 import com.panda.rpc.provider.ServiceProviderImpl;
 import com.panda.rpc.register.NacosServiceRegistry;
@@ -9,7 +10,7 @@ import com.panda.rpc.exception.RpcException;
 import com.panda.rpc.register.ServiceRegistry;
 import com.panda.rpc.handler.RequestHandler;
 import com.panda.rpc.serializer.CommonSerializer;
-import com.panda.rpc.util.ThreadPoolFactory;
+import com.panda.rpc.factory.ThreadPoolFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,19 +66,22 @@ public class SocketServer implements RpcServer {
 
     /**
      * @description 服务端启动
-     * @param [port]
+     * @param []
      * @return [void]
      * @date [2021-02-05 11:57]
      */
     @Override
     public void start(){
-        try(ServerSocket serverSocket = new ServerSocket(port)){
+        try(ServerSocket serverSocket = new ServerSocket()){
+            serverSocket.bind(new InetSocketAddress(host, port));
             logger.info("服务器启动……");
+            //添加钩子，服务端关闭时会注销服务
+            ShutdownHook.getShutdownHook().addClearAllHook();
             Socket socket;
             //当未接收到连接请求时，accept()会一直阻塞
             while ((socket = serverSocket.accept()) != null){
                 logger.info("客户端连接！{}:{}", socket.getInetAddress(), socket.getPort());
-                threadPool.execute(new RequestHandlerThread(socket, requestHandler, serializer));
+                threadPool.execute(new SocketRequestHandlerThread(socket, requestHandler, serializer));
             }
             threadPool.shutdown();
         }catch (IOException e){

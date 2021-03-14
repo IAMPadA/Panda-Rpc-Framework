@@ -1,4 +1,4 @@
-package com.panda.rpc.util;
+package com.panda.rpc.factory;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import lombok.NoArgsConstructor;

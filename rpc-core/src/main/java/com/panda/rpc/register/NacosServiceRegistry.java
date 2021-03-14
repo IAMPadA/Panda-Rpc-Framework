@@ -1,7 +1,6 @@
 package com.panda.rpc.register;
 
 import com.alibaba.nacos.api.exception.NacosException;
-import com.alibaba.nacos.api.naming.NamingService;
 import com.panda.rpc.enumeration.RpcError;
 import com.panda.rpc.exception.RpcException;
 import com.panda.rpc.util.NacosUtil;
@@ -19,12 +18,6 @@ public class NacosServiceRegistry implements ServiceRegistry{
 
     private static final Logger logger = LoggerFactory.getLogger(NacosServiceRegistry.class);
 
-    public final NamingService namingService;
-
-    public NacosServiceRegistry(){
-        namingService = NacosUtil.getNacosNamingService();
-    }
-
     /**
      * @description 将服务的名称和地址注册进服务注册中心
      * @param [serviceName, inetSocketAddress]
@@ -35,7 +28,7 @@ public class NacosServiceRegistry implements ServiceRegistry{
     public void register(String serviceName, InetSocketAddress inetSocketAddress) {
         try {
             //向Nacos注册服务
-            NacosUtil.registerService(namingService, serviceName, inetSocketAddress);
+            NacosUtil.registerService(serviceName, inetSocketAddress);
         }catch (NacosException e) {
             logger.error("注册服务时有错误发生" + e);
             throw new RpcException(RpcError.REGISTER_SERVICE_FAILED);
