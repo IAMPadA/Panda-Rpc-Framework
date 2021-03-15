@@ -1,22 +1,24 @@
 package com.panda.rpc.transport.socket.client;
 
-import com.panda.rpc.register.NacosServiceDiscovery;
-import com.panda.rpc.register.NacosServiceRegistry;
-import com.panda.rpc.register.ServiceDiscovery;
-import com.panda.rpc.register.ServiceRegistry;
-import com.panda.rpc.transport.RpcClient;
 import com.panda.rpc.entity.RpcRequest;
 import com.panda.rpc.entity.RpcResponse;
 import com.panda.rpc.enumeration.RpcError;
 import com.panda.rpc.exception.RpcException;
+import com.panda.rpc.loadbalancer.LoadBalancer;
+import com.panda.rpc.loadbalancer.RandomLoadBalancer;
+import com.panda.rpc.register.NacosServiceDiscovery;
+import com.panda.rpc.register.ServiceDiscovery;
 import com.panda.rpc.serializer.CommonSerializer;
+import com.panda.rpc.transport.RpcClient;
 import com.panda.rpc.transport.socket.util.ObjectReader;
 import com.panda.rpc.transport.socket.util.ObjectWriter;
 import com.panda.rpc.util.RpcMessageChecker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 
@@ -34,11 +36,20 @@ public class SocketClient implements RpcClient {
     private final CommonSerializer serializer;
 
     public SocketClient() {
-        this(DEFAULT_SERIALIZER);
+        //以默认序列化器调用构造函数
+        this(DEFAULT_SERIALIZER, new RandomLoadBalancer());
     }
 
-    public SocketClient(Integer serializerCode) {
-        serviceDiscovery = new NacosServiceDiscovery();
+    public SocketClient(LoadBalancer loadBalancer){
+        this(DEFAULT_SERIALIZER, loadBalancer);
+    }
+
+    public SocketClient(Integer serializerCode){
+        this(serializerCode, new RandomLoadBalancer());
+    }
+
+    public SocketClient(Integer serializerCode, LoadBalancer loadBalancer) {
+        serviceDiscovery = new NacosServiceDiscovery(loadBalancer);
         serializer = CommonSerializer.getByCode(serializerCode);
     }
 
