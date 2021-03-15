@@ -5,8 +5,6 @@ import com.panda.rpc.util.NacosUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ExecutorService;
-
 /**
  * @author [PANDA] 1843047930@qq.com
  * @date [2021-03-14 13:45]

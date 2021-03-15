@@ -2,11 +2,14 @@ package com.panda.rpc.transport.netty.client;
 
 import com.panda.rpc.entity.RpcRequest;
 import com.panda.rpc.entity.RpcResponse;
+import com.panda.rpc.factory.SingletonFactory;
 import com.panda.rpc.serializer.CommonSerializer;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
-import io.netty.util.AttributeKey;
 import io.netty.util.ReferenceCountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +24,12 @@ import java.net.InetSocketAddress;
 public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponse> {
 
     private static final Logger logger = LoggerFactory.getLogger(NettyClientHandler.class);
+
+    private final UnprocessedRequests unprocessedRequests;
+
+    public NettyClientHandler(){
+        unprocessedRequests = SingletonFactory.getInstance(UnprocessedRequests.class);
+    }
 
     @Override
     public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
@@ -44,10 +53,8 @@ public class NettyClientHandler extends SimpleChannelInboundHandler<RpcResponse>
     protected void channelRead0(ChannelHandlerContext ctx, RpcResponse msg) throws Exception {
         try {
             logger.info(String.format("客户端接收到消息：%s", msg));
-            AttributeKey<RpcResponse> key = AttributeKey.valueOf("rpcResponse" + msg.getRequestId());
-            ctx.channel().attr(key).set(msg);
-            //关闭客户端通道
-            ctx.channel().close();
+            //将响应数据取出
+            unprocessedRequests.complete(msg);
         } finally {
             ReferenceCountUtil.release(msg);
         }

@@ -2,8 +2,6 @@ package com.panda.rpc.transport.netty.server;
 
 import com.panda.rpc.entity.RpcRequest;
 import com.panda.rpc.handler.RequestHandler;
-import io.netty.channel.ChannelFuture;
-import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.timeout.IdleState;
@@ -48,10 +46,12 @@ public class NettyServerHandler extends SimpleChannelInboundHandler<RpcRequest> 
             }
             logger.info("服务端接收到请求：{}", msg);
             Object response = requestHandler.handle(msg);
-            //注意这里的通道是workGroup中的，而NettyServer中创建的是bossGroup的，不要混淆
-            ChannelFuture future = ctx.writeAndFlush(response);
-            //当操作失败或者被取消了就关闭通道
-            future.addListener(ChannelFutureListener.CLOSE_ON_FAILURE);
+            if(ctx.channel().isActive() && ctx.channel().isWritable()) {
+                //注意这里的通道是workGroup中的，而NettyServer中创建的是bossGroup的，不要混淆
+                ctx.writeAndFlush(response);
+            }else {
+                logger.error("通道不可写");
+            }
         }finally {
             ReferenceCountUtil.release(msg);
         }
