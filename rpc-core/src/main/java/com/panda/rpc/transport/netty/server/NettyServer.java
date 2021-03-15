@@ -1,16 +1,16 @@
 package com.panda.rpc.transport.netty.server;
 
+import com.panda.rpc.codec.CommonDecoder;
+import com.panda.rpc.codec.CommonEncoder;
+import com.panda.rpc.enumeration.RpcError;
+import com.panda.rpc.exception.RpcException;
 import com.panda.rpc.hook.ShutdownHook;
 import com.panda.rpc.provider.ServiceProvider;
 import com.panda.rpc.provider.ServiceProviderImpl;
 import com.panda.rpc.register.NacosServiceRegistry;
 import com.panda.rpc.register.ServiceRegistry;
-import com.panda.rpc.transport.RpcServer;
-import com.panda.rpc.codec.CommonDecoder;
-import com.panda.rpc.codec.CommonEncoder;
-import com.panda.rpc.enumeration.RpcError;
-import com.panda.rpc.exception.RpcException;
 import com.panda.rpc.serializer.CommonSerializer;
+import com.panda.rpc.transport.RpcServer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
@@ -18,10 +18,12 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
+import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author [PANDA] 1843047930@qq.com
@@ -99,7 +101,9 @@ public class NettyServer implements RpcServer {
                             ChannelPipeline pipeline = ch.pipeline();
                             //往管道中添加Handler，注意入站Handler与出站Handler都必须按实际执行顺序添加，比如先解码再Server处理，那Decoder()就要放在前面
                             //但入站和出站Handler之间则互不影响，这里我就是先添加的出站Handler再添加的入站
-                            pipeline.addLast(new CommonEncoder(serializer))
+                            //设定IdleStateHandler心跳检测每30秒进行一次读检测，如果30秒内ChannelRead()方法未被调用则触发一次userEventTrigger()方法
+                            pipeline.addLast(new IdleStateHandler(30, 0, 0, TimeUnit.SECONDS))
+                                    .addLast(new CommonEncoder(serializer))
                                     .addLast(new CommonDecoder())
                                     .addLast(new NettyServerHandler());
                         }
