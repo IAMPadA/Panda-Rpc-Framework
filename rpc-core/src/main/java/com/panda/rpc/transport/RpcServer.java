@@ -19,5 +19,5 @@ public interface RpcServer {
      * @return [void]
      * @date [2021-03-13 15:56]
      */
-    <T> void publishService(T service, Class<T> serviceClass);
+    <T> void publishService(T service, String serviceName);
 }

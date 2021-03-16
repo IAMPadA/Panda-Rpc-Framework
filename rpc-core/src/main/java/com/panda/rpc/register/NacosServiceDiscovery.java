@@ -2,6 +2,8 @@ package com.panda.rpc.register;
 
 import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.pojo.Instance;
+import com.panda.rpc.enumeration.RpcError;
+import com.panda.rpc.exception.RpcException;
 import com.panda.rpc.loadbalancer.LoadBalancer;
 import com.panda.rpc.loadbalancer.RandomLoadBalancer;
 import com.panda.rpc.util.NacosUtil;
@@ -40,6 +42,10 @@ public class NacosServiceDiscovery implements ServiceDiscovery{
         try {
             //利用列表获取某个服务的所有提供者
             List<Instance> instances = NacosUtil.getAllInstance(serviceName);
+            if(instances.size() == 0){
+                logger.error("找不到对应服务：" + serviceName);
+                throw new RpcException(RpcError.SERVICE_NOT_FOUND);
+            }
             //负载均衡获取一个服务实体
             Instance instance = loadBalancer.select(instances);
             return new InetSocketAddress(instance.getIp(), instance.getPort());
