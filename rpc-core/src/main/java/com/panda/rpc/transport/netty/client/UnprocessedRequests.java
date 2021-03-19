@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * @author [PANDA] 1843047930@qq.com
  * @date [2021-03-15 14:18]
- * @description 未处理的请求（对所有客户端请求进行统一管理）
+ * @description 未处理的请求（对所有Netty客户端请求进行统一管理）
  */
 public class UnprocessedRequests {
 
